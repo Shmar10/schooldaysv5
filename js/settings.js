@@ -6,15 +6,20 @@ const $ = s => document.querySelector(s);
 
 export function openSettings() {
     document.body.style.overflow = 'hidden';
-    $('#backdrop').hidden = false;
+    const backdrop = $('#backdrop');
+    backdrop.style.display = 'flex';
+    backdrop.hidden = false;
     $('#ovDate').value = toKey(new Date());
     $('#ovKind').value = 'DEFAULT';
     $('#ovCustom').value = '';
     ensureRows(); clearForm(); refreshList();
 }
+
 export function closeSettings() {
     document.body.style.overflow = '';
-    $('#backdrop').hidden = true;
+    const backdrop = $('#backdrop');
+    backdrop.hidden = true;
+    backdrop.style.display = '';
 }
 
 export function wireSettings() {
@@ -68,6 +73,7 @@ function ensureRows() {
         host.appendChild(row);
     }
 }
+
 function clearForm() {
     for (let i = 1; i <= 9; i++) {
         const id = String(i).padStart(2, '0');
@@ -75,6 +81,7 @@ function clearForm() {
         if (s) s.value = ''; if (e) e.value = '';
     }
 }
+
 function fillFrom(name) {
     let sched = [];
     if (name === 'DEFAULT') sched = SCHEDULE_DEFAULT;
@@ -93,6 +100,7 @@ function fillFrom(name) {
         }
     }
 }
+
 function buildJSON() {
     const rows = [];
     for (let i = 1; i <= 9; i++) {
