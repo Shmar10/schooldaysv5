@@ -103,7 +103,6 @@ function render() {
     document.getElementById('schoolDays').textContent = schoolDaysLeft;
     document.getElementById('calDays').textContent = calDaysLeft;
     document.getElementById('pctComplete').textContent = pctComplete + '%';
-    document.getElementById('progressFill').style.width = pctComplete + '%';
 
     buildChips(now);
     document.getElementById('range').textContent =

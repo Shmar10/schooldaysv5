@@ -27,7 +27,7 @@ body {
   background: linear-gradient(135deg, var(--bg1), var(--bg2));
   background-size: 200% 200%;
   animation: hue 16s ease-in-out infinite;
-  color: var(--fg);
+  color: var(--fg)
 }
 
 @keyframes hue {
@@ -67,7 +67,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 18px;
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
-  padding: 16px 16px 14px;
+  padding: 16px 16px 14px
 }
 
 h1 {
@@ -75,7 +75,7 @@ h1 {
   line-height: 1.07;
   margin: 0 0 6px;
   font-weight: 900;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em
 }
 
 .sub {
@@ -94,12 +94,25 @@ h1 {
 
 @media (max-width:780px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr
   }
 }
 
 .row {
   padding: 6px 0
+}
+
+.stats-line {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 4px 0 8px;
+  letter-spacing: 0.02em
+}
+
+.stats-line span {
+  font-weight: 700;
+  color: var(--fg)
 }
 
 .chips {
