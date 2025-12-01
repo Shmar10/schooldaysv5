@@ -1,0 +1,138 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 13px
+}
+
+.spacer {
+    flex: 1
+}
+
+.filter-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer
+}
+
+.filter-btn:hover {
+    background: #f3f4f6
+}
+
+.filter-btn.active {
+    background: var(--bg1);
+    color: #fff;
+    font-weight: 600
+}
+
+.mini-btn {
+    font-size: 11px;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer
+}
+
+.sec {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden
+}
+
+summary {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    background: #f9fafb
+}
+
+summary:hover {
+    background: #f3f4f6
+}
+
+summary h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600
+}
+
+.badge {
+    background: var(--bg1);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 99px;
+    font-weight: 700
+}
+
+.list {
+    padding: 0
+}
+
+.item {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: baseline
+}
+
+.item[hidden] {
+    display: none
+}
+
+.tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--bg1);
+    background: #f3e8ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap
+}
+
+.date {
+    font-weight: 500;
+    font-size: 14px
+}
+
+.note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px
+}
+
+.as-btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 6px 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 500
+}
+
+.as-btn:hover {
+    background: #f9fafb
+}

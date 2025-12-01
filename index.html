@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NN Vikings — School Days & Periods</title>
+  <meta name="theme-color" content="#6b21a8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <h3 class="brand">NN Vikings</h3>
+    <div class="card">
+      <h1 id="topline">Loading…</h1>
+
+      <div class="grid">
+        <div class="row sub" id="today"></div>
+        <div class="row sub" id="next"></div>
+      </div>
+
+      <!-- Shows "Wednesday schedule" or "Special schedule" when applicable -->
+      <div class="row sub" id="modeRow"></div>
+
+      <!-- Period chips (past/now/upcoming) -->
+      <div class="chips" id="chips"></div>
+
+      <div class="btns">
+        <button id="refreshBtn">Refresh now</button>
+        <button id="copyBtn">Copy details</button>
+        <button id="settingsBtn">⚙️ Settings</button>
+        <a href="./dates.html" class="as-btn"
+          style="text-decoration:none;display:inline-block;padding:6px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;font-weight:500">📅
+          View important dates</a>
+      </div>
+
+      <!-- Preview controls at bottom -->
+      <div id="previewControls" class="controls small"
+        style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="muted" style="color:var(--muted)">Preview date:</span>
+        <input type="date" id="previewDate" style="padding:4px;border-radius:4px;border:1px solid var(--border)" />
+        <button id="useTodayBtn" title="Clear preview" style="padding:4px 8px">Use today</button>
+        <span id="previewInfo" class="muted" style="margin-left:auto;color:var(--muted)"></span>
+      </div>
+
+      <div class="small" id="range"></div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="backdrop" id="backdrop" hidden
+    style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;display:flex;align-items:center;justify-content:center">
+    <div class="modal"
+      style="background:#fff;width:90%;max-width:500px;border-radius:12px;padding:20px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
+      <div class="modal-body">
+        <h3 style="margin-top:0">Special day overrides</h3>
+        <p class="small" style="margin-top:0;color:var(--muted)">
+          Add one-off dates with a different schedule. Stored locally in your browser.
+        </p>
+
+        <div class="row2" style="display:flex;gap:12px;margin-bottom:12px">
+          <div style="flex:1">
+            <label for="ovDate" style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Date</label>
+            <input id="ovDate" type="date" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px">
+          </div>
+          <div style="flex:1">
+            <label for="ovKind" style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Schedule</label>
+            <select id="ovKind" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px">
+              <option value="DEFAULT">Default (regular)</option>
+              <option value="WED_LATE">Late Start</option>
+              <option value="LATE_ARRIVAL_1010">Late Arrival</option>
+              <option value="CUSTOM">Custom (paste or build)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:8px">
+          <label for="ovCustom" style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Custom schedule
+            JSON (array of periods)</label>
+          <textarea id="ovCustom" placeholder="[]"
+            style="width:100%;height:60px;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-family:monospace;font-size:12px"></textarea>
+        </div>
+
+        <div class="builder" style="margin-top:16px;padding-top:16px;border-top:1px solid #e5e7eb">
+          <h4 style="margin:0 0 8px">Build a 9-period schedule</h4>
+          <div class="bgrid" id="bgrid" style="display:grid;gap:4px">
+            <div class="bhead"
+              style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px">
+              <div>P</div>
+              <div>Start — End</div>
+            </div>
+            <!-- rows injected by settings.js -->
+          </div>
+          <style>
+            .brow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              font-size: 13px
+            }
+
+            .times {
+              display: flex;
+              align-items: center;
+              gap: 4px
+            }
+
+            .times input {
+              width: 66px;
+              padding: 2px 4px;
+              border: 1px solid #d1d5db;
+              border-radius: 4px
+            }
+          </style>
+          <div class="btns" style="margin-top:8px">
+            <button id="bLoadDefault">Load Default</button>
+            <button id="bLoadWed">Load Wed</button>
+            <button id="bLoad1010">Load 10:10</button>
+            <button id="bClear">Clear</button>
+            <button id="bBuild">Use times → Fill JSON</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer"
+        style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="ovAdd" style="background:var(--bg1);color:#fff;border:none">Add / Update</button>
+        <button id="ovClear">Clear all overrides</button>
+        <button id="closeModal" style="margin-left:auto">Close</button>
+      </div>
+
+      <div class="modal-body" style="margin-top:12px">
+        <div id="ovList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
