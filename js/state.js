@@ -1,6 +1,6 @@
 import {
     SCHEDULE_DEFAULT, SCHEDULE_WED, SCHEDULE_LATE_1010,
-    LATE_WEDNESDAYS, LATE_ARRIVAL_1010
+    LATE_WEDNESDAYS, LATE_ARRIVAL_1010, INCLUDE_ONLY
 } from './data.js';
 import { toKey } from './helpers.js';
 
@@ -17,28 +17,49 @@ export const removeOverride = (dateKey) => { const o = getOverrides(); delete o[
 export const clearOverrides = () => saveOverrides({});
 
 export function scheduleForDate(baseDate) {
+    const y = baseDate.getFullYear(), m = baseDate.getMonth(), d = baseDate.getDate();
     const key = toKey(baseDate);
     const ov = getOverrides();
+
+    let base = SCHEDULE_DEFAULT;
 
     // Check overrides first
     if (ov[key]) {
         const val = ov[key];
         if (val.startsWith('CUSTOM:')) {
-            try { return JSON.parse(val.slice(7)); } catch { }
+            try {
+                const custom = JSON.parse(val.slice(7));
+                // Custom schedules from JSON might have string times, convert them
+                base = custom.map(p => ({
+                    ...p,
+                    start: typeof p.start === 'string' ? p.start.split(':').map(Number) : p.start,
+                    end: typeof p.end === 'string' ? p.end.split(':').map(Number) : p.end
+                }));
+            } catch { base = SCHEDULE_DEFAULT; }
+        } else if (val === 'WED_LATE') {
+            base = SCHEDULE_WED;
+        } else if (val === 'LATE_ARRIVAL_1010') {
+            base = SCHEDULE_LATE_1010;
+        } else if (val === 'DEFAULT') {
+            base = SCHEDULE_DEFAULT;
         }
-        if (val === 'WED_LATE') return SCHEDULE_WED;
-        if (val === 'LATE_ARRIVAL_1010') return SCHEDULE_LATE_1010;
-        if (val === 'DEFAULT') return SCHEDULE_DEFAULT;
+    } else {
+        // Check static lists
+        if (LATE_ARRIVAL_1010.includes(key)) {
+            base = SCHEDULE_LATE_1010;
+        } else if (LATE_WEDNESDAYS.includes(key)) {
+            base = SCHEDULE_WED;
+        } else if (baseDate.getDay() === 3) {
+            base = SCHEDULE_WED;
+        }
     }
 
-    // Check static lists
-    if (LATE_ARRIVAL_1010.includes(key)) return SCHEDULE_LATE_1010;
-    if (LATE_WEDNESDAYS.includes(key)) return SCHEDULE_WED;
-    if (baseDate.getDay() === 3) return SCHEDULE_WED; // Fallback for Wednesdays not in list? Or strictly follow list? v4 logic was day==3. v3 used list. Let's stick to v4 logic + list for explicit overrides.
-
-    // Actually, v4 logic was: SPECIAL_DATES[key] || (day===3 ? WED : DEFAULT).
-    // v3 logic was: overrides || late1010 || lateWeds || DEFAULT.
-    // Let's combine: Overrides > Late1010 List > LateWed List > Day 3 Check > Default.
-
-    return SCHEDULE_DEFAULT;
+    // Process the schedule to add dates and count flags
+    const useOnly = Array.isArray(INCLUDE_ONLY) ? new Set(INCLUDE_ONLY) : null;
+    return base.map(p => ({
+        ...p,
+        startDate: new Date(y, m, d, p.start[0], p.start[1]),
+        endDate: new Date(y, m, d, p.end[0], p.end[1]),
+        _count: useOnly ? useOnly.has(p.id) : !!p.include
+    }));
 }
