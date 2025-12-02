@@ -139,11 +139,9 @@ function render() {
     if (previewDate) {
         document.getElementById('previewInfo').textContent = `Showing schedule for ${shortMD(now)}`;
         document.getElementById('useTodayBtn').hidden = false;
-        document.getElementById('previewDate').value = toKey(now);
     } else {
         document.getElementById('previewInfo').textContent = "";
         document.getElementById('useTodayBtn').hidden = true;
-        document.getElementById('previewDate').value = toKey(realNow);
     }
 }
 
@@ -164,13 +162,6 @@ document.getElementById('copyBtn').addEventListener('click', () => {
     navigator.clipboard?.writeText(lines.join("\n"));
 });
 
-document.getElementById('previewDate').addEventListener('change', e => {
-    if (e.target.value) {
-        const [y, m, d] = e.target.value.split('-').map(Number);
-        previewDate = new Date(y, m - 1, d);
-        render();
-    }
-});
 document.getElementById('useTodayBtn').addEventListener('click', () => {
     previewDate = null;
     render();
