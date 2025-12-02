@@ -181,5 +181,5 @@ if ('serviceWorker' in navigator) {
 }
 
 wireSettings();
-wireCalendar();
+wireCalendar(setPreviewDate);
 render();

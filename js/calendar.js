@@ -1,10 +1,10 @@
 import { FIRST_DAY, LAST_DAY, LATE_WEDNESDAYS, LATE_ARRIVAL_1010, FINAL_EXAMS } from './data.js';
 import { toKey, buildNonAttendanceMap } from './helpers.js';
-import { setPreviewDate } from './app.js';
 
 const $ = s => document.querySelector(s);
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
+let onDateSelect = null;
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -107,7 +107,7 @@ function renderMonth() {
         }
 
         cell.addEventListener('click', () => {
-            setPreviewDate(date);
+            if (onDateSelect) onDateSelect(date);
             closeCalendar();
         });
 
@@ -115,7 +115,8 @@ function renderMonth() {
     }
 }
 
-export function wireCalendar() {
+export function wireCalendar(onSelect) {
+    onDateSelect = onSelect;
     $('#calBtn').addEventListener('click', openCalendar);
     $('#calClose').addEventListener('click', closeCalendar);
     $('#calBackdrop').addEventListener('click', e => {
