@@ -20,6 +20,27 @@ export function setPreviewDate(date) {
 function buildChips(now = new Date()) {
     const chips = document.getElementById('chips');
     chips.innerHTML = "";
+
+    // Check if it's a non-attendance day
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    const na = buildNonAttendanceMap();
+
+    if (na.has(+today)) {
+        // It's a holiday/break - show friendly message instead of periods
+        const holidayName = na.get(+today);
+        const message = document.createElement('div');
+        message.style.cssText = 'text-align:center;padding:20px;background:#d1fae5;border-radius:12px;margin:10px 0';
+        message.innerHTML = `
+            <div style="font-size:24px;margin-bottom:8px">🎉</div>
+            <div style="font-size:18px;font-weight:700;color:#065f46;margin-bottom:6px">${holidayName}</div>
+            <div style="font-size:14px;color:#047857">No school - Enjoy your time off!</div>
+        `;
+        chips.appendChild(message);
+        return;
+    }
+
+    // Regular school day - show period chips
     const sched = scheduleForDate(now);
     for (const p of sched) {
         if (!p._count) continue;
@@ -32,6 +53,7 @@ function buildChips(now = new Date()) {
         el.textContent = txt;
         chips.appendChild(el);
     }
+
     const row = document.getElementById('modeRow');
     row.innerHTML = "";
 
