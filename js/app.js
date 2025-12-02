@@ -12,6 +12,11 @@ import { wireCalendar } from './calendar.js';
 // Preview state
 let previewDate = null;
 
+export function setPreviewDate(date) {
+    previewDate = date;
+    render();
+}
+
 function buildChips(now = new Date()) {
     const chips = document.getElementById('chips');
     chips.innerHTML = "";

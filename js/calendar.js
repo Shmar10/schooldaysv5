@@ -1,5 +1,6 @@
 import { FIRST_DAY, LAST_DAY, LATE_WEDNESDAYS, LATE_ARRIVAL_1010 } from './data.js';
 import { toKey, buildNonAttendanceMap } from './helpers.js';
+import { setPreviewDate } from './app.js';
 
 const $ = s => document.querySelector(s);
 let currentMonth = new Date().getMonth();
@@ -104,8 +105,8 @@ function renderMonth() {
         }
 
         cell.addEventListener('click', () => {
-            // TODO: Open schedule preview for this date
-            alert(`Preview schedule for ${monthName} ${day}, ${currentYear}`);
+            setPreviewDate(date);
+            closeCalendar();
         });
 
         grid.appendChild(cell);
