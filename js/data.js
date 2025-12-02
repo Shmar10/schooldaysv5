@@ -84,3 +84,13 @@ export const LATE_ARRIVAL_1010 = [
   "2026-01-07",  // Wednesday, January 7, 2026
   "2026-05-21"   // Thursday, May 21, 2026 (Last day of school)
 ];
+
+// Final Exam Days (YYYY-MM-DD)
+export const FINAL_EXAMS = [
+  "2025-12-18",  // Thursday, December 18, 2025
+  "2025-12-19",  // Friday, December 19, 2025
+  "2025-12-20",  // Saturday, December 20, 2025
+  "2026-05-19",  // Tuesday, May 19, 2026
+  "2026-05-20",  // Wednesday, May 20, 2026
+  "2026-05-21"   // Thursday, May 21, 2026
+];
