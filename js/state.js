@@ -1,6 +1,7 @@
 import {
     SCHEDULE_DEFAULT, SCHEDULE_WED, SCHEDULE_LATE_1010,
-    LATE_WEDNESDAYS, LATE_ARRIVAL_1010, INCLUDE_ONLY
+    SCHEDULE_EXAM_DEC17, SCHEDULE_EXAM_DEC18, SCHEDULE_EXAM_DEC19,
+    LATE_WEDNESDAYS, LATE_ARRIVAL_1010, INCLUDE_ONLY, SPECIAL_DATES
 } from './data.js';
 import { toKey } from './helpers.js';
 
@@ -43,8 +44,16 @@ export function scheduleForDate(baseDate) {
         } else if (val === 'DEFAULT') {
             base = SCHEDULE_DEFAULT;
         }
-    } else {
-        // Check static lists
+    }
+    // Check special dates (exams, etc.)
+    else if (SPECIAL_DATES[key]) {
+        const schedType = SPECIAL_DATES[key];
+        if (schedType === 'EXAM_DEC17') base = SCHEDULE_EXAM_DEC17;
+        else if (schedType === 'EXAM_DEC18') base = SCHEDULE_EXAM_DEC18;
+        else if (schedType === 'EXAM_DEC19') base = SCHEDULE_EXAM_DEC19;
+    }
+    // Check static lists
+    else {
         if (LATE_ARRIVAL_1010.includes(key)) {
             base = SCHEDULE_LATE_1010;
         } else if (LATE_WEDNESDAYS.includes(key)) {
