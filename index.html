@@ -153,8 +153,38 @@
       style="background:#fff;width:90%;max-width:600px;border-radius:12px;padding:20px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
       <div class="cal-header">
         <button id="calPrev">‹</button>
+        <h3 id="calMonth">Month Year</h3>
+        <button id="calNext">›</button>
+      </div>
 
-        <script type="module" src="js/app.js"></script>
+      <div id="calGrid" class="cal-grid"></div>
+
+      <div class="cal-legend">
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="background:#f3e8ff"></div>
+          <span>School Day</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="background:#fecaca"></div>
+          <span>Holiday/Break</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="background:#fed7aa;border-color:#f97316;border-width:2px"></div>
+          <span>Final Exams</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="border-color:#fbbf24;border-width:3px"></div>
+          <span>Late Start</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;text-align:center">
+        <button id="calClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 
 </html>

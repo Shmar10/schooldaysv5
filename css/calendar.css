@@ -62,9 +62,48 @@
     pointer-events: none
 }
 
-justify-content: center;
-margin-top: 12px;
-font-size: 11px
+.cal-day.weekend {
+    background: #e5e7eb;
+    color: var(--muted)
+}
+
+.cal-day.school {
+    background: #f3e8ff;
+    color: var(--fg);
+    font-weight: 600
+}
+
+.cal-day.late-start {
+    border-color: #fbbf24;
+    border-width: 3px
+}
+
+.cal-day.holiday {
+    background: #fecaca;
+    color: #991b1b;
+    font-weight: 700
+}
+
+.cal-day.exam {
+    background: #fed7aa;
+    color: #9a3412;
+    font-weight: 700;
+    border: 2px solid #f97316
+}
+
+.cal-day.today {
+    border-color: var(--bg1);
+    border-width: 3px;
+    font-weight: 700
+}
+
+.cal-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
+    font-size: 11px
 }
 
 .cal-legend-item {
