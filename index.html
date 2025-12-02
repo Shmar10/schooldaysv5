@@ -9,6 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/calendar.css">
 </head>
 
 <body>
@@ -38,6 +39,7 @@
         <button id="refreshBtn">Refresh now</button>
         <button id="copyBtn">Copy details</button>
         <button id="settingsBtn">⚙️ Settings</button>
+        <button id="calBtn">📅 Calendar</button>
         <a href="./dates.html" class="as-btn"
           style="text-decoration:none;display:inline-block;padding:6px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;font-weight:500">📅
           View important dates</a>
@@ -140,6 +142,40 @@
 
       <div class="modal-body" style="margin-top:12px">
         <div id="ovList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar modal -->
+  <div class="backdrop" id="calBackdrop" hidden
+    style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center">
+    <div class="modal"
+      style="background:#fff;width:90%;max-width:600px;border-radius:12px;padding:20px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
+      <div class="cal-header">
+        <button id="calPrev">‹</button>
+        <h3 id="calMonth">Month Year</h3>
+        <button id="calNext">›</button>
+      </div>
+
+      <div id="calGrid" class="cal-grid"></div>
+
+      <div class="cal-legend">
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="background:#f3e8ff"></div>
+          <span>School Day</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="background:#fecaca"></div>
+          <span>Holiday/Break</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-legend-box" style="border-color:#fbbf24;border-width:3px"></div>
+          <span>Late Start</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;text-align:center">
+        <button id="calClose">Close</button>
       </div>
     </div>
   </div>

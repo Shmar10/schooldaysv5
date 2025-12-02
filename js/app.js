@@ -7,6 +7,7 @@ import {
 } from './helpers.js';
 import { scheduleForDate } from './state.js';
 import { wireSettings } from './settings.js';
+import { wireCalendar } from './calendar.js';
 
 // Preview state
 let previewDate = null;
@@ -153,4 +154,5 @@ if ('serviceWorker' in navigator) {
 }
 
 wireSettings();
+wireCalendar();
 render();
