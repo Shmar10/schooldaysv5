@@ -1,0 +1,105 @@
+// Prisma schema for School Year Calendar App
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DayType {
+  INSTRUCTIONAL
+  NON_ATTENDANCE
+  BREAK
+  SPECIAL_SCHEDULE
+}
+
+enum UploadType {
+  YEAR_CALENDAR
+  DAILY_SCHEDULE
+}
+
+model SchoolYear {
+  id            String   @id @default(uuid())
+  name          String
+  startDate     DateTime @db.Date
+  endDate       DateTime @db.Date
+  timeZone      String   @default("America/New_York")
+  totalSchoolDays Int    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  days          Day[]
+  schedules     Schedule[]
+  breaks        Break[]
+  uploads       Upload[]
+
+  @@index([startDate, endDate])
+}
+
+model Day {
+  id            String   @id @default(uuid())
+  date          DateTime @db.Date
+  dayType       DayType
+  label         String?
+  notes         String?
+  isSchoolDay   Boolean  @default(true)
+  schoolYearId  String
+  scheduleId    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  schoolYear    SchoolYear @relation(fields: [schoolYearId], references: [id], onDelete: Cascade)
+  schedule      Schedule?  @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+
+  @@unique([schoolYearId, date])
+  @@index([schoolYearId, date])
+  @@index([date, isSchoolDay])
+}
+
+model Schedule {
+  id            String   @id @default(uuid())
+  name          String
+  isDefault     Boolean  @default(false)
+  schoolYearId  String
+  periods       Json     // Array of { name: string, startTime: string, endTime: string }
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  schoolYear    SchoolYear @relation(fields: [schoolYearId], references: [id], onDelete: Cascade)
+  days          Day[]
+
+  @@index([schoolYearId])
+}
+
+model Break {
+  id            String   @id @default(uuid())
+  startDate     DateTime @db.Date
+  endDate       DateTime @db.Date
+  label         String
+  schoolYearId  String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  schoolYear    SchoolYear @relation(fields: [schoolYearId], references: [id], onDelete: Cascade)
+
+  @@index([schoolYearId, startDate, endDate])
+}
+
+model Upload {
+  id            String     @id @default(uuid())
+  type          UploadType
+  originalFilename String
+  filePath      String
+  parsed        Boolean    @default(false)
+  parsedSummary Json?      // Optional JSON summary of parsed dates/schedules
+  schoolYearId  String?
+  uploadedAt    DateTime   @default(now())
+
+  schoolYear    SchoolYear? @relation(fields: [schoolYearId], references: [id], onDelete: SetNull)
+
+  @@index([schoolYearId])
+}
+
