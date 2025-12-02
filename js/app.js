@@ -3,7 +3,7 @@ import {
 } from './data.js';
 import {
     oneDay, iso, shortMD, toKey, dateRange, buildNonAttendanceMap,
-    fullDaysAfterToday, todayStatus, remainingPeriodsToday, plural
+    fullDaysAfterToday, todayStatus, remainingPeriodsToday, plural, isWeekday
 } from './helpers.js';
 import { scheduleForDate } from './state.js';
 import { wireSettings } from './settings.js';
@@ -25,6 +25,20 @@ function buildChips(now = new Date()) {
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
     const na = buildNonAttendanceMap();
+
+    // Check if it's a weekend - show cheerful message instead of periods
+    if (!isWeekday(today)) {
+        const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
+        const message = document.createElement('div');
+        message.style.cssText = 'text-align:center;padding:20px;background:linear-gradient(to right, #f3e8ff, #fce7f3);border-radius:12px;margin:10px 0';
+        message.innerHTML = `
+            <div style="font-size:32px;margin-bottom:8px">🎉</div>
+            <div style="font-size:18px;font-weight:700;color:#6b21a8;margin-bottom:6px">No School - Enjoy Your Weekend!</div>
+            <div style="font-size:14px;color:#7c3aed">${dayName} is a day to relax and recharge ☀️</div>
+        `;
+        chips.appendChild(message);
+        return;
+    }
 
     if (na.has(+today)) {
         // It's a holiday/break - show friendly message instead of periods
@@ -55,7 +69,13 @@ function buildChips(now = new Date()) {
     }
 
     const row = document.getElementById('modeRow');
+    if (!row) return; // Element doesn't exist
     row.innerHTML = "";
+
+    // Don't show schedule labels for weekends (today is already defined above)
+    if (!isWeekday(today)) {
+        return; // Don't show schedule labels for weekends
+    }
 
     const isWed = now.getDay() === 3;
     const key = toKey(now);
