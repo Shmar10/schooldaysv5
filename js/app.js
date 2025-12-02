@@ -114,33 +114,40 @@ function render() {
         document.getElementById('topline').textContent =
             `${plural(daysExclToday, 'day', 'days')} and ${plural(periodsToday, 'period', 'periods')} left`;
     } else {
-        document.getElementById('topline').textContent = "Preview Mode";
+        document.getElementById('topline').textContent = iso(today);
     }
 
     const [status] = todayStatus(today);
-    document.getElementById('today').textContent = `${previewDate ? 'Preview' : 'Today'}: ${status}  (${iso(today)})`;
+    
+    if (!previewDate) {
+        document.getElementById('today').textContent = `Today: ${status}  (${iso(today)})`;
 
-    const na = buildNonAttendanceMap();
-    const start = new Date(Math.max(realToday, FIRST_DAY));
-    let msg = "Next break: None — approaching the end of the year";
-    for (const d of dateRange(start, LAST_DAY)) {
-        if (na.has(+d)) {
-            const label = na.get(+d);
-            let end = new Date(d);
-            for (const f of dateRange(new Date(+d + oneDay), LAST_DAY)) {
-                if (na.get(+f) === label) {
-                    end = f;
-                } else {
-                    break;
+        const na = buildNonAttendanceMap();
+        const start = new Date(Math.max(realToday, FIRST_DAY));
+        let msg = "Next break: None — approaching the end of the year";
+        for (const d of dateRange(start, LAST_DAY)) {
+            if (na.has(+d)) {
+                const label = na.get(+d);
+                let end = new Date(d);
+                for (const f of dateRange(new Date(+d + oneDay), LAST_DAY)) {
+                    if (na.get(+f) === label) {
+                        end = f;
+                    } else {
+                        break;
+                    }
                 }
+                msg = (d.getTime() === end.getTime())
+                    ? `Next break: ${label} on ${iso(d).replace(/, \d{4}$/, '')}`
+                    : `Next break: ${label} (${shortMD(d)}–${shortMD(end)})`;
+                break;
             }
-            msg = (d.getTime() === end.getTime())
-                ? `Next break: ${label} on ${iso(d).replace(/, \d{4}$/, '')}`
-                : `Next break: ${label} (${shortMD(d)}–${shortMD(end)})`;
-            break;
         }
+        document.getElementById('next').textContent = msg;
+    } else {
+        // Hide today/next text in preview mode
+        document.getElementById('today').textContent = "";
+        document.getElementById('next').textContent = "";
     }
-    document.getElementById('next').textContent = msg;
 
     // Calculate and display stats
     const totalSchoolDays = fullDaysAfterToday(FIRST_DAY) + 1;
@@ -157,7 +164,7 @@ function render() {
         `School year: ${iso(FIRST_DAY).replace(/, \d{4}$/, '')} — ${iso(LAST_DAY).replace(/^[A-Za-z]+, /, '')}`;
 
     if (previewDate) {
-        document.getElementById('previewInfo').textContent = `Showing schedule for ${shortMD(now)}`;
+        document.getElementById('previewInfo').textContent = "";
         document.getElementById('useTodayBtn').hidden = false;
     } else {
         document.getElementById('previewInfo').textContent = "";
