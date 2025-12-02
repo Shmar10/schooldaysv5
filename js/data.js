@@ -80,5 +80,7 @@ export const LATE_WEDNESDAYS = [
 
 // Late Arrival 10:10 (YYYY-MM-DD)
 export const LATE_ARRIVAL_1010 = [
-  "2025-12-19", "2026-05-21"
+  "2025-09-05",  // Friday, September 5, 2025
+  "2026-01-07",  // Wednesday, January 7, 2026
+  "2026-05-21"   // Thursday, May 21, 2026 (Last day of school)
 ];
