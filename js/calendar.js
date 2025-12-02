@@ -1,6 +1,5 @@
-import { FIRST_DAY, LAST_DAY } from './data.js';
+import { FIRST_DAY, LAST_DAY, LATE_WEDNESDAYS, LATE_ARRIVAL_1010 } from './data.js';
 import { toKey, buildNonAttendanceMap } from './helpers.js';
-import { scheduleForDate } from './state.js';
 
 const $ = s => document.querySelector(s);
 let currentMonth = new Date().getMonth();
@@ -35,12 +34,10 @@ function isSchoolDay(date) {
 }
 
 function isLateStart(date) {
-    const sched = scheduleForDate(date);
-    // Check if first period starts late (after 7:30)
-    if (sched.length > 0 && sched[0].start) {
-        const [h, m] = sched[0].start;
-        return h > 7 || (h === 7 && m > 30);
-    }
+    const key = toKey(date);
+    // Check if date is in late start arrays
+    if (LATE_ARRIVAL_1010.includes(key)) return true;
+    if (LATE_WEDNESDAYS.includes(key)) return true;
     return false;
 }
 
@@ -65,7 +62,7 @@ function renderMonth() {
         grid.appendChild(label);
     });
 
-    // Get first day of month and total days
+    //Get first day of month and total days
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const startDayOfWeek = firstDay.getDay();
