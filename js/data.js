@@ -11,7 +11,7 @@ export const NON_ATTENDANCE = [
   ["Thanksgiving Break", 2025, 10, 26, 2025, 10, 28],
   ["Winter Break", 2025, 11, 22, 2026, 0, 2],
   ["Martin Luther King Day", 2026, 0, 19, 2026, 0, 19],
-  ["Presidents’ Day", 2026, 1, 16, 2026, 1, 16],
+  ["Presidents' Day", 2026, 1, 16, 2026, 1, 16],
   ["Teacher Institute", 2026, 2, 13, 2026, 2, 13],
   ["Spring Break", 2026, 2, 30, 2026, 3, 3],
 ];
@@ -32,55 +32,7 @@ export const SCHEDULE_DEFAULT = [
   { id: "08", label: "Period 08", start: [13, 54], end: [14, 36], include: true },
   { id: "09", label: "Period 09", start: [14, 41], end: [15, 23], include: true },
 ];
-/* Wednesday schedule */
-export const SCHEDULE_WED = [
-  { id: "01", label: "Period 01", start: [9, 40], end: [10, 14], include: true },
-  { id: "02", label: "Period 02", start: [10, 19], end: [10, 52], include: true },
-  { id: "03", label: "Period 03", start: [10, 57], end: [11, 31], include: true },
-  { id: "04", label: "Period 04", start: [11, 36], end: [12, 10], include: true },
-  { id: "05", label: "Period 05", start: [12, 15], end: [12, 49], include: true },
-  { id: "06", label: "Period 06", start: [12, 54], end: [13, 28], include: true },
-  { id: "07", label: "Period 07", start: [13, 33], end: [14, 7], include: true },
-  { id: "08", label: "Period 08", start: [14, 12], end: [14, 45], include: true },
-  { id: "09", label: "Period 09", start: [14, 50], end: [15, 23], include: true },
-];
 
-export const SCHEDULE_LATE_1010 = [
-  { id: "01", label: "Period 01", start: [10, 10], end: [10, 38], include: true },
-/* =====================
-   CALENDAR SETTINGS
-   ===================== */
-export const FIRST_DAY = new Date(2025, 7, 12); // Aug 12, 2025
-export const LAST_DAY = new Date(2026, 4, 21); // May 21, 2026
-export const NON_ATTENDANCE = [
-  ["Teacher Institute", 2025, 7, 11, 2025, 7, 11],
-  ["Labor Day", 2025, 8, 1, 2025, 8, 1],
-  ["Indigenous Peoples Day", 2025, 9, 13, 2025, 9, 13],
-  ["Teacher Institute", 2025, 9, 31, 2025, 9, 31],
-  ["Thanksgiving Break", 2025, 10, 26, 2025, 10, 28],
-  ["Winter Break", 2025, 11, 22, 2026, 0, 2],
-  ["Martin Luther King Day", 2026, 0, 19, 2026, 0, 19],
-  ["Presidents’ Day", 2026, 1, 16, 2026, 1, 16],
-  ["Teacher Institute", 2026, 2, 13, 2026, 2, 13],
-  ["Spring Break", 2026, 2, 30, 2026, 3, 3],
-];
-
-/* =====================
-   BELL SCHEDULES
-   ===================== */
-/* Default (Mon, Tue, Thu, Fri) */
-export const SCHEDULE_DEFAULT = [
-  { id: "01", label: "Period 01", start: [8, 10], end: [8, 52], include: true },
-  { id: "02", label: "Period 02", start: [8, 57], end: [9, 39], include: true },
-  { id: "03", label: "Period 03", start: [9, 44], end: [10, 26], include: true },
-  { id: "HR", label: "Homeroom", start: [10, 31], end: [10, 41], include: false },
-  { id: "04", label: "Period 04", start: [10, 46], end: [11, 28], include: true },
-  { id: "05", label: "Period 05", start: [11, 33], end: [12, 15], include: true },
-  { id: "06", label: "Period 06", start: [12, 20], end: [13, 2], include: true },
-  { id: "07", label: "Period 07", start: [13, 7], end: [13, 49], include: true },
-  { id: "08", label: "Period 08", start: [13, 54], end: [14, 36], include: true },
-  { id: "09", label: "Period 09", start: [14, 41], end: [15, 23], include: true },
-];
 /* Wednesday schedule */
 export const SCHEDULE_WED = [
   { id: "01", label: "Period 01", start: [9, 40], end: [10, 14], include: true },
@@ -128,9 +80,7 @@ export const SCHEDULE_EXAM_DEC19 = [
 // If you only want to count certain sections, list period IDs here; otherwise all include:true are counted
 export const INCLUDE_ONLY = null;
 
-/* Optional date-specific overrides (e.g., assemblies)
-   Example: { '2025-11-05': SCHEDULE_WED }
-*/
+/* Optional date-specific overrides (e.g., assemblies) */
 export const SPECIAL_DATES = {
   '2025-12-17': 'EXAM_DEC17',
   '2025-12-18': 'EXAM_DEC18',
