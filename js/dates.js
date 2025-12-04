@@ -1,5 +1,6 @@
 import { iso, shortMD } from './helpers.js';
-import { FIRST_DAY, LAST_DAY } from './data.js';
+import { initConfig, FIRST_DAY, LAST_DAY } from './data.js';
+import { loadSchoolConfig } from './config-loader.js';
 
 const FILES = {
     NON_ATT: 'data/non_attendance.json',
@@ -91,6 +92,18 @@ function wireFilters() {
 }
 
 (async function boot() {
+    // Initialize config first
+    await initConfig();
+    
+    // Update branding
+    const config = await loadSchoolConfig();
+    document.title = `${config.name} — Important Dates`;
+    const brandEl = document.querySelector('.brand');
+    if (brandEl) brandEl.textContent = config.name;
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', config.themeColor);
+    document.documentElement.style.setProperty('--bg1', config.themeColor);
+    
     // Summary
     addRow($('#summary'), { left: 'First Day', main: isoLong(FIRST_DAY) });
     addRow($('#summary'), { left: 'Last Day', main: isoLong(LAST_DAY) });

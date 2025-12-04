@@ -1,3 +1,4 @@
+import { initConfig } from './data.js';
 import {
     FIRST_DAY, LAST_DAY, SPECIAL_DATES
 } from './data.js';
@@ -194,10 +195,20 @@ document.getElementById('useTodayBtn').addEventListener('click', () => {
     render();
 });
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => { });
+// Initialize app after config is loaded
+async function initApp() {
+    // Load school configuration first
+    await initConfig();
+    
+    // Now initialize the rest of the app
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => { });
+    }
+    
+    wireSettings();
+    wireCalendar(setPreviewDate);
+    render();
 }
 
-wireSettings();
-wireCalendar(setPreviewDate);
-render();
+// Start the app
+initApp();
