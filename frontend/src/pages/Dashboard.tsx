@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { dashboardApi } from '../api/dashboard';
 import { useSchoolYearStore } from '../store/useSchoolYearStore';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, getDay } from 'date-fns';
 
 export default function Dashboard() {
   const { currentSchoolYear } = useSchoolYearStore();
@@ -57,7 +57,13 @@ export default function Dashboard() {
     );
   }
 
-  const { metrics, nextNonAttendanceDay, isTodayNonAttendance } = dashboardData;
+  const { metrics, nextNonAttendanceDay, isTodayNonAttendance, todayDay, todaySchedule, currentPeriodIndex, remainingPeriods } = dashboardData;
+  
+  // Check if today is a weekend
+  const today = new Date();
+  const dayOfWeek = getDay(today);
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // 0 = Sunday, 6 = Saturday
+  const dayName = format(today, 'EEEE'); // Full day name (e.g., "Saturday")
 
   return (
     <div className="px-4 py-8">
@@ -84,13 +90,67 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Weekend Message - only show if it's a weekend and NOT a holiday/break */}
+      {isWeekend && !isTodayNonAttendance && (
+        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg shadow p-6 mb-6 text-center">
+          <div className="text-4xl mb-2">🎉</div>
+          <div className="text-xl font-bold text-purple-800 mb-2">No School - Enjoy Your Weekend!</div>
+          <div className="text-sm text-purple-600">{dayName} is a day to relax and recharge ☀️</div>
+        </div>
+      )}
+
+      {/* Holiday/Break Message - show if it's a holiday/break (even if it's also a weekend) */}
+      {isTodayNonAttendance && (
+        <div className="bg-green-100 rounded-lg shadow p-6 mb-6 text-center">
+          <div className="text-3xl mb-2">🎉</div>
+          <div className="text-xl font-bold text-green-800 mb-2">
+            {todayDay?.label || (todayDay?.dayType === 'BREAK' ? 'Break' : 'Holiday')}
+          </div>
+          <div className="text-sm text-green-700">No school - Enjoy your time off!</div>
+        </div>
+      )}
+
+      {/* Today's Schedule (only show if it's a school day and not a weekend) */}
+      {!isWeekend && !isTodayNonAttendance && todaySchedule && (
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Schedule</h3>
+          {todaySchedule.periods && Array.isArray(todaySchedule.periods) && todaySchedule.periods.length > 0 ? (
+            <div className="space-y-2">
+              {todaySchedule.periods.map((period: any, index: number) => {
+                const isCurrent = currentPeriodIndex === index;
+                const isPast = currentPeriodIndex !== null && index < currentPeriodIndex;
+                return (
+                  <div
+                    key={index}
+                    className={`p-3 rounded-lg border-2 ${
+                      isCurrent
+                        ? 'bg-blue-50 border-blue-500 font-semibold'
+                        : isPast
+                        ? 'bg-gray-50 border-gray-200 opacity-60'
+                        : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{period.name}</span>
+                      <span className="text-sm text-gray-600">
+                        {period.startTime} - {period.endTime}
+                      </span>
+                    </div>
+                    {isCurrent && (
+                      <div className="mt-1 text-xs text-blue-600">Current Period</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-gray-500">No schedule available for today</p>
+          )}
+        </div>
+      )}
+
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Next Non-Attendance Day</h3>
-        {isTodayNonAttendance && (
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-blue-800 font-medium">Today is a non-attendance day</p>
-          </div>
-        )}
         {nextNonAttendanceDay ? (
           <div>
             <p className="text-gray-700">

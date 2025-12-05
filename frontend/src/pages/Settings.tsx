@@ -74,23 +74,15 @@ export default function Settings() {
     },
   });
 
-  if (!currentSchoolYear) {
-    return (
-      <div className="px-4 py-8">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <p className="text-yellow-800 mb-4">No school year selected. Create your first school year below.</p>
-        </div>
-        <CreateSchoolYearForm 
-          onCreate={(data) => createSchoolYearMutation.mutate(data)} 
-          isSubmitting={createSchoolYearMutation.isPending}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="px-4 py-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Settings</h2>
+
+      {!currentSchoolYear && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800 mb-2">No school year selected. Select one from "Manage Calendars" or create a new one below.</p>
+        </div>
+      )}
 
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
@@ -106,21 +98,23 @@ export default function Settings() {
           </button>
           <button
             onClick={() => setActiveTab('schedules')}
+            disabled={!currentSchoolYear}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'schedules'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            } ${!currentSchoolYear ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Schedules
           </button>
           <button
             onClick={() => setActiveTab('uploads')}
+            disabled={!currentSchoolYear}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'uploads'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+            } ${!currentSchoolYear ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Uploads
           </button>
@@ -139,20 +133,29 @@ export default function Settings() {
 
       {activeTab === 'school-year' && (
         <div className="space-y-6">
-          <SchoolYearSettings
-            schoolYear={currentSchoolYear}
-            onUpdate={(data) => updateSchoolYearMutation.mutate({ id: currentSchoolYear.id, data })}
-            onCreate={(data) => createSchoolYearMutation.mutate(data)}
-          />
-          <UpdateCalendarFromJson schoolYearId={currentSchoolYear.id} />
+          {currentSchoolYear ? (
+            <>
+              <SchoolYearSettings
+                schoolYear={currentSchoolYear}
+                onUpdate={(data) => updateSchoolYearMutation.mutate({ id: currentSchoolYear.id, data })}
+                onCreate={(data) => createSchoolYearMutation.mutate(data)}
+              />
+              <UpdateCalendarFromJson schoolYearId={currentSchoolYear.id} />
+            </>
+          ) : (
+            <CreateSchoolYearForm 
+              onCreate={(data) => createSchoolYearMutation.mutate(data)} 
+              isSubmitting={createSchoolYearMutation.isPending}
+            />
+          )}
         </div>
       )}
 
-      {activeTab === 'schedules' && (
+      {activeTab === 'schedules' && currentSchoolYear && (
         <SchedulesSettings schoolYearId={currentSchoolYear.id} schedules={schedules || []} />
       )}
 
-      {activeTab === 'uploads' && (
+      {activeTab === 'uploads' && currentSchoolYear && (
         <UploadsSettings schoolYearId={currentSchoolYear.id} uploads={uploads || []} />
       )}
 

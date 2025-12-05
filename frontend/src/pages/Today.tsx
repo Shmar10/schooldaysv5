@@ -170,39 +170,20 @@ export default function Today() {
           </div>
         ) : null}
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Only essential actions */}
         <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
           <button
             onClick={() => refetch()}
             className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 active:bg-blue-800 text-xs sm:text-sm font-medium touch-manipulation"
           >
-            Refresh now
+            Refresh
           </button>
           <button
             onClick={copyDetails}
             className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 text-xs sm:text-sm font-medium touch-manipulation"
           >
-            Copy details
+            Copy Details
           </button>
-          <Link
-            to="/settings"
-            className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 sm:gap-2 touch-manipulation"
-          >
-            <span className="text-sm sm:text-base">⚙️</span> <span>Settings</span>
-          </Link>
-          <Link
-            to="/calendar"
-            className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 sm:gap-2 touch-manipulation"
-          >
-            <span className="text-sm sm:text-base">📅</span> <span>Calendar</span>
-          </Link>
-          <Link
-            to="/special-days"
-            className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:bg-gray-400 text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 sm:gap-2 touch-manipulation"
-          >
-            <span className="text-sm sm:text-base">📅</span> <span className="hidden sm:inline">View important dates</span>
-            <span className="sm:hidden">Important dates</span>
-          </Link>
         </div>
       </div>
 
