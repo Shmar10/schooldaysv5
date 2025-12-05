@@ -1,17 +1,20 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { generateDaysForSchoolYear } from '../services/dayService';
+import { generateDaysForSchoolYear, fixWeekendsForSchoolYear, fixDateOffsetsForSchoolYear } from '../services/dayService';
 import { prisma } from '../lib/prisma';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { logger } from '../lib/logger';
+import { parseLocalDate } from '../lib/dateUtils';
 
 const router = Router();
 
 const schoolYearSchema = z.object({
   name: z.string().min(1),
-  startDate: z.string().transform((str) => new Date(str)),
-  endDate: z.string().transform((str) => new Date(str)),
+  startDate: z.string().transform((str) => parseLocalDate(str)),
+  endDate: z.string().transform((str) => parseLocalDate(str)),
   timeZone: z.string().optional().default('America/New_York'),
+  primaryColor: z.string().optional().nullable().transform((val) => val === '' ? null : val),
+  secondaryColor: z.string().optional().nullable().transform((val) => val === '' ? null : val),
 });
 
 // GET /api/school-years - List all school years
@@ -55,14 +58,25 @@ router.get('/:id', asyncHandler(async (req, res) => {
 }));
 
 // POST /api/school-years - Create new school year
-router.post('/', async (req, res) => {
-  try {
-    const data = schoolYearSchema.parse(req.body);
+router.post('/', asyncHandler(async (req, res) => {
+  const requestId = (req as any).requestId;
+  logger.info('Creating school year', { body: req.body }, requestId);
+  
+  const data = schoolYearSchema.parse(req.body);
+  
+  logger.info('Parsed school year data', { 
+    name: data.name,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    timeZone: data.timeZone,
+    primaryColor: data.primaryColor,
+    secondaryColor: data.secondaryColor,
+  }, requestId);
 
-    // Validate dates
-    if (data.startDate >= data.endDate) {
-      return res.status(400).json({ error: 'startDate must be before endDate' });
-    }
+  // Validate dates
+  if (data.startDate >= data.endDate) {
+    throw new AppError('startDate must be before endDate', 400);
+  }
 
     const schoolYear = await prisma.schoolYear.create({
       data: {
@@ -70,6 +84,8 @@ router.post('/', async (req, res) => {
         startDate: data.startDate,
         endDate: data.endDate,
         timeZone: data.timeZone,
+        primaryColor: data.primaryColor,
+        secondaryColor: data.secondaryColor,
       },
     });
 
@@ -89,13 +105,9 @@ router.post('/', async (req, res) => {
       data: { totalSchoolDays },
     });
 
+    logger.info('Created school year', { schoolYearId: schoolYear.id }, requestId);
     res.status(201).json(updated);
-  } catch (error) {
-    // Zod errors are automatically handled by errorHandler middleware
-    // Re-throw to let the error handler process it
-    throw error;
-  }
-});
+}));
 
 // PUT /api/school-years/:id - Update school year
 router.put('/:id', async (req, res) => {
@@ -126,6 +138,8 @@ router.put('/:id', async (req, res) => {
         startDate,
         endDate,
         timeZone: data.timeZone,
+        primaryColor: data.primaryColor,
+        secondaryColor: data.secondaryColor,
       },
     });
 
@@ -164,6 +178,41 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update school year' });
   }
 });
+
+// POST /api/school-years/:id/fix-weekends - Fix weekends for existing school year
+router.post('/:id/fix-weekends', asyncHandler(async (req, res) => {
+  const requestId = (req as any).requestId;
+  const { id } = req.params;
+  
+  const schoolYear = await prisma.schoolYear.findUnique({ where: { id } });
+  if (!schoolYear) {
+    throw new AppError('School year not found', 404);
+  }
+  
+  // First fix date offsets, then fix weekends
+  const dateOffsetCount = await fixDateOffsetsForSchoolYear(id);
+  const weekendCount = await fixWeekendsForSchoolYear(id);
+  
+  logger.info('Fixed dates and weekends for school year', { 
+    schoolYearId: id, 
+    dateOffsetCount,
+    weekendCount 
+  }, requestId);
+  
+  const updated = await prisma.schoolYear.findUnique({
+    where: { id },
+    include: {
+      schedules: true,
+      breaks: true,
+    },
+  });
+  
+  res.json({ 
+    ...updated,
+    fixedDateOffsets: dateOffsetCount,
+    fixedWeekendDays: weekendCount,
+  });
+}));
 
 // DELETE /api/school-years/:id - Delete school year
 router.delete('/:id', async (req, res) => {

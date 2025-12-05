@@ -27,6 +27,8 @@ model SchoolYear {
   startDate     DateTime @db.Date
   endDate       DateTime @db.Date
   timeZone      String   @default("America/New_York")
+  primaryColor  String?  // Hex color code for primary school color
+  secondaryColor String? // Hex color code for secondary school color
   totalSchoolDays Int    @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

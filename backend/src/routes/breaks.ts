@@ -2,12 +2,13 @@ import { Router } from 'express';
 import { DayType } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
+import { parseLocalDate, normalizeDate } from '../lib/dateUtils';
 
 const router = Router();
 
 const breakSchema = z.object({
-  startDate: z.string().transform((str) => new Date(str)),
-  endDate: z.string().transform((str) => new Date(str)),
+  startDate: z.string().transform((str) => parseLocalDate(str)),
+  endDate: z.string().transform((str) => parseLocalDate(str)),
   label: z.string().min(1),
   schoolYearId: z.string(),
 });
@@ -95,23 +96,29 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Break overlaps with existing break' });
     }
 
+    // Normalize break dates to ensure correct storage
+    const normalizedStartDate = normalizeDate(data.startDate);
+    const normalizedEndDate = normalizeDate(data.endDate);
+
     // Create break
     const breakRecord = await prisma.break.create({
       data: {
-        startDate: data.startDate,
-        endDate: data.endDate,
+        startDate: normalizedStartDate,
+        endDate: normalizedEndDate,
         label: data.label,
         schoolYearId: data.schoolYearId,
       },
     });
 
     // Update all days in this range to BREAK type and isSchoolDay = false
-    const current = new Date(data.startDate);
-    while (current <= data.endDate) {
+    const current = new Date(normalizedStartDate);
+    const end = new Date(normalizedEndDate);
+    while (current <= end) {
+      const dayDate = normalizeDate(current);
       await prisma.day.updateMany({
         where: {
           schoolYearId: data.schoolYearId,
-          date: new Date(current),
+          date: dayDate,
         },
         data: {
           dayType: DayType.BREAK,

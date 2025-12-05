@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { dashboardApi } from '../api/dashboard';
 import { useSchoolYearStore } from '../store/useSchoolYearStore';
 import { format, parseISO } from 'date-fns';
@@ -15,10 +16,24 @@ export default function Dashboard() {
   if (!currentSchoolYear) {
     return (
       <div className="px-4 py-8">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            Please select a school year from the dropdown in the navigation bar.
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+          <p className="text-yellow-800 mb-2">
+            No school year selected. Create your first school year to get started.
           </p>
+          <div className="flex gap-4 mt-4">
+            <Link
+              to="/quick-setup"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+            >
+              🚀 Quick Setup (AI-Assisted)
+            </Link>
+            <Link
+              to="/settings"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm font-medium"
+            >
+              Manual Setup
+            </Link>
+          </div>
         </div>
       </div>
     );

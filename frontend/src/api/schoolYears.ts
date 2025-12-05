@@ -16,6 +16,8 @@ export const schoolYearApi = {
     startDate: string;
     endDate: string;
     timeZone?: string;
+    primaryColor?: string | null;
+    secondaryColor?: string | null;
   }): Promise<SchoolYear> => {
     const response = await apiClient.post<SchoolYear>('/school-years', data);
     return response.data;
@@ -26,6 +28,8 @@ export const schoolYearApi = {
     startDate: string;
     endDate: string;
     timeZone: string;
+    primaryColor?: string | null;
+    secondaryColor?: string | null;
   }>): Promise<SchoolYear> => {
     const response = await apiClient.put<SchoolYear>(`/school-years/${id}`, data);
     return response.data;
@@ -33,6 +37,11 @@ export const schoolYearApi = {
 
   delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/school-years/${id}`);
+  },
+
+  fixWeekends: async (id: string): Promise<SchoolYear & { fixedWeekendDays?: number }> => {
+    const response = await apiClient.post<SchoolYear & { fixedWeekendDays?: number }>(`/school-years/${id}/fix-weekends`);
+    return response.data;
   },
 };
 

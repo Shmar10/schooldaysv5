@@ -2,11 +2,12 @@ import { Router } from 'express';
 import { DayType } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
+import { parseLocalDate, normalizeDate } from '../lib/dateUtils';
 
 const router = Router();
 
 const daySchema = z.object({
-  date: z.string().transform((str) => new Date(str)),
+  date: z.string().transform((str) => parseLocalDate(str)),
   dayType: z.nativeEnum(DayType),
   label: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
@@ -17,7 +18,7 @@ const daySchema = z.object({
 const bulkUpdateSchema = z.object({
   schoolYearId: z.string(),
   updates: z.array(z.object({
-    date: z.string().transform((str) => new Date(str)),
+    date: z.string().transform((str) => parseLocalDate(str)),
     dayType: z.nativeEnum(DayType).optional(),
     label: z.string().optional().nullable(),
     notes: z.string().optional().nullable(),
@@ -40,10 +41,14 @@ router.get('/', async (req, res) => {
     if (startDate || endDate) {
       where.date = {};
       if (startDate) {
-        where.date.gte = new Date(startDate as string);
+        const start = parseLocalDate(startDate as string);
+        start.setHours(0, 0, 0, 0);
+        where.date.gte = start;
       }
       if (endDate) {
-        where.date.lte = new Date(endDate as string);
+        const end = parseLocalDate(endDate as string);
+        end.setHours(23, 59, 59, 999);
+        where.date.lte = end;
       }
     }
 
@@ -104,7 +109,14 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'School year not found' });
     }
 
-    if (data.date < schoolYear.startDate || data.date > schoolYear.endDate) {
+    // Normalize the date to ensure it's stored correctly
+    const normalizedDate = normalizeDate(data.date);
+    
+    // Normalize school year dates for comparison
+    const normalizedStartDate = normalizeDate(schoolYear.startDate);
+    const normalizedEndDate = normalizeDate(schoolYear.endDate);
+    
+    if (normalizedDate < normalizedStartDate || normalizedDate > normalizedEndDate) {
       return res.status(400).json({ error: 'Date is outside school year range' });
     }
 
@@ -119,10 +131,11 @@ router.post('/', async (req, res) => {
       where: {
         schoolYearId_date: {
           schoolYearId,
-          date: data.date,
+          date: normalizedDate,
         },
       },
       update: {
+        date: normalizedDate, // Update date in case it was stored incorrectly
         dayType: data.dayType,
         label: data.label,
         notes: data.notes,
@@ -130,7 +143,7 @@ router.post('/', async (req, res) => {
         scheduleId: data.scheduleId,
       },
       create: {
-        date: data.date,
+        date: normalizedDate,
         dayType: data.dayType,
         label: data.label,
         notes: data.notes,
@@ -243,8 +256,15 @@ router.post('/bulk', async (req, res) => {
     const results = [];
 
     for (const update of updates) {
+      // Normalize the date
+      const normalizedUpdateDate = normalizeDate(update.date);
+      
+      // Normalize school year dates for comparison
+      const normalizedStartDate = normalizeDate(schoolYear.startDate);
+      const normalizedEndDate = normalizeDate(schoolYear.endDate);
+      
       // Verify date is in range
-      if (update.date < schoolYear.startDate || update.date > schoolYear.endDate) {
+      if (normalizedUpdateDate < normalizedStartDate || normalizedUpdateDate > normalizedEndDate) {
         continue; // Skip invalid dates
       }
 
@@ -252,7 +272,7 @@ router.post('/bulk', async (req, res) => {
         where: {
           schoolYearId_date: {
             schoolYearId,
-            date: update.date,
+            date: normalizedUpdateDate,
           },
         },
         update: {
@@ -263,7 +283,7 @@ router.post('/bulk', async (req, res) => {
           ...(update.scheduleId !== undefined && { scheduleId: update.scheduleId }),
         },
         create: {
-          date: update.date,
+          date: normalizedUpdateDate,
           dayType: update.dayType || DayType.INSTRUCTIONAL,
           isSchoolDay: update.isSchoolDay ?? true,
           label: update.label,

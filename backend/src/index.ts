@@ -42,6 +42,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Root route - API information
+app.get('/', (req, res) => {
+  const requestId = (req as any).requestId;
+  res.json({
+    name: 'School Year Calendar API',
+    version: '1.0.0',
+    status: 'running',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      schoolYears: '/api/school-years',
+      days: '/api/days',
+      schedules: '/api/schedules',
+      breaks: '/api/breaks',
+      uploads: '/api/uploads',
+      dashboard: '/api/dashboard',
+    },
+    requestId,
+  });
+});
+
 // Routes
 app.use('/api/school-years', schoolYearRoutes);
 app.use('/api/days', dayRoutes);
