@@ -3,7 +3,7 @@ import {
 } from './data.js';
 import {
     oneDay, iso, shortMD, toKey, dateRange, buildNonAttendanceMap,
-    fullDaysAfterToday, todayStatus, remainingPeriodsToday, plural
+    fullDaysAfterToday, todayStatus, remainingPeriodsToday, plural, isWeekday
 } from './helpers.js';
 import { scheduleForDate } from './state.js';
 import { wireSettings } from './settings.js';
@@ -35,6 +35,19 @@ function buildChips(now = new Date()) {
             <div style="font-size:24px;margin-bottom:8px">🎉</div>
             <div style="font-size:18px;font-weight:700;color:#065f46;margin-bottom:6px">${holidayName}</div>
             <div style="font-size:14px;color:#047857">No school - Enjoy your time off!</div>
+        `;
+        chips.appendChild(message);
+        return;
+    }
+
+    // Check if it's a weekend (and not already caught by non-attendance)
+    if (!isWeekday(today)) {
+        const message = document.createElement('div');
+        message.style.cssText = 'text-align:center;padding:20px;background:#fae8ff;border-radius:12px;margin:10px 0';
+        message.innerHTML = `
+            <div style="font-size:24px;margin-bottom:8px">🎉</div>
+            <div style="font-size:18px;font-weight:700;color:#86198f;margin-bottom:6px">Weekend</div>
+            <div style="font-size:14px;color:#701a75">No school today! Enjoy your weekend!</div>
         `;
         chips.appendChild(message);
         return;
